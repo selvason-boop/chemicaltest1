@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemical Equation Balancer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #495057, #343a40);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .username-section {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .username-input {
+            padding: 12px 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+            width: 300px;
+            backdrop-filter: blur(10px);
+        }
+
+        .username-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .username-input:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40,167,69,0.4);
+        }
+
+        .welcome-message {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .welcome-message h2 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .game-area {
+            padding: 40px;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-item h3 {
+            color: #495057;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .score-item .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .equation-container {
+            background: #fff;
+            border: 3px solid #e9ecef;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .equation {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #495057;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .coefficient-input {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 5px;
+            background: #f8f9ff;
+        }
+
+        .coefficient-input:focus {
+            outline: none;
+            border-color: #0056b3;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+            animation: inputFocus 0.3s ease;
+        }
+
+        @keyframes inputFocus {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            0% { transform: translateX(-100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes sparkle {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1) rotate(180deg); opacity: 1; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes correctGlow {
+            0% { box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(40, 167, 69, 0.8), 0 0 30px rgba(40, 167, 69, 0.6); }
+            100% { box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); }
+        }
+
+        .animate-bounce {
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        .animate-pulse {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .animate-slideIn {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .animate-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .animate-sparkle {
+            animation: sparkle 0.8s ease-in-out;
+        }
+
+        .animate-correctGlow {
+            animation: correctGlow 1s ease-in-out 3;
+        }
+
+        .molecule {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 8px 12px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: #28a745;
+            margin: 0 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40,167,69,0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,193,7,0.4);
+        }
+
+        .feedback {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+
+        .feedback.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .feedback.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .hint-box {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .hint-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .hint-box p {
+            color: #856404;
+            line-height: 1.5;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #28a745, #20c997);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ffd700;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 2s ease-out forwards;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff6b6b;
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(200px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .firework-spark {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        @keyframes fireworkLaunch {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-300px) scale(0.8);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes fireworkExplode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        @keyframes sparkFly {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .equation {
+                font-size: 1.4rem;
+            }
+            
+            .coefficient-input {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+            }
+            
+            .username-input {
+                width: 250px;
+                font-size: 1rem;
+            }
+            
+            .welcome-message h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚗️ Chemical Equation Balancer</h1>
+            <p>Master the art of balancing chemical equations!</p>
+            <div class="username-section" id="usernameSection">
+                <input type="text" id="usernameInput" placeholder="Enter your name to start!" class="username-input">
+                <button onclick="startGame()" class="btn btn-start">Start Game</button>
+            </div>
+            <div class="welcome-message" id="welcomeMessage" style="display: none;">
+                <h2>Welcome, <span id="playerName"></span>! 🧪</h2>
+                <p>Let's balance some equations!</p>
+            </div>
+        </div>
+
+        <div class="game-area" id="gameArea" style="display: none;">
+            <div class="score-board">
+                <div class="score-item">
+                    <h3>SCORE</h3>
+                    <div class="number" id="score">0</div>
+                </div>
+                <div class="score-item">
+                    <h3>LEVEL</h3>
+                    <div class="number" id="level">1</div>
+                </div>
+                <div class="score-item">
+                    <h3>STREAK</h3>
+                    <div class="number" id="streak">0</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="hint-box" id="hintBox">
+                <h4>💡 Hint:</h4>
+                <p id="hintText"></p>
+            </div>
+
+            <div class="equation-container">
+                <div class="equation" id="equation"></div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="checkAnswer()">Check Answer</button>
+                <button class="btn btn-success" onclick="nextEquation()">Next Equation</button>
+                <button class="btn btn-warning" onclick="showHint()">Show Hint</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Created By Siva
+        </div>
+    </div>
+
+    <script>
+        let currentEquation = 0;
+        let score = 0;
+        let level = 1;
+        let streak = 0;
+        let hintsUsed = 0;
+
+        // Sound effects using Web Audio API
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(frequency, duration, type = 'sine') {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playSuccessSound() {
+            // Happy ascending notes
+            playSound(523.25, 0.2); // C5
+            setTimeout(() => playSound(659.25, 0.2), 100); // E5
+            setTimeout(() => playSound(783.99, 0.3), 200); // G5
+        }
+
+        function playErrorSound() {
+            // Descending error sound
+            playSound(400, 0.15);
+            setTimeout(() => playSound(300, 0.15), 100);
+            setTimeout(() => playSound(200, 0.2), 200);
+        }
+
+        function playClickSound() {
+            playSound(800, 0.1, 'square');
+        }
+
+        function playHintSound() {
+            playSound(600, 0.2, 'triangle');
+        }
+
+        function playFireworkSound() {
+            // Launch sound - whoosh
+            playSound(200, 0.3, 'sawtooth');
+            // Explosion sound - pop with sparkles
+            setTimeout(() => {
+                playSound(800, 0.1, 'square');
+                setTimeout(() => playSound(600, 0.1, 'square'), 50);
+                setTimeout(() => playSound(400, 0.1, 'square'), 100);
+                setTimeout(() => playSound(300, 0.2, 'triangle'), 150);
+            }, 300);
+        }
+
+        const equations = [
+            // Level 1 - Simple
+            {
+                reactants: ['H₂', 'O₂'],
+                products: ['H₂O'],
+                coefficients: [2, 1, 2],
+                hint: "Start with the most complex molecule (H₂O). You need 2 H₂O, which requires 2 H₂ and 1 O₂."
+            },
+            {
+                reactants: ['N₂', 'H₂'],
+                products: ['NH₃'],
+                coefficients: [1, 3, 2],
+                hint: "Balance nitrogen first: 1 N₂ gives 2 NH₃. Then balance hydrogen: 2 NH₃ needs 3 H₂."
+            },
+            {
+                reactants: ['CH₄', 'O₂'],
+                products: ['CO₂', 'H₂O'],
+                coefficients: [1, 2, 1, 2],
+                hint: "Start with carbon: 1 CH₄ gives 1 CO₂. Then hydrogen: 1 CH₄ gives 2 H₂O. Finally oxygen: 2 O₂ needed."
+            },
+            // Level 2 - Medium
+            {
+                reactants: ['C₂H₆', 'O₂'],
+                products: ['CO₂', 'H₂O'],
+                coefficients: [2, 7, 4, 6],
+                hint: "Balance carbon first: 2 C₂H₆ gives 4 CO₂. Then hydrogen: 2 C₂H₆ gives 6 H₂O. Finally oxygen."
+            },
+            {
+                reactants: ['Al', 'HCl'],
+                products: ['AlCl₃', 'H₂'],
+                coefficients: [2, 6, 2, 3],
+                hint: "Start with aluminum: 2 Al gives 2 AlCl₃. This needs 6 HCl, producing 3 H₂."
+            },
+            // Level 3 - Hard
+            {
+                reactants: ['Ca(OH)₂', 'H₃PO₄'],
+                products: ['Ca₃(PO₄)₂', 'H₂O'],
+                coefficients: [3, 2, 1, 6],
+                hint: "Look at the phosphate groups: 2 H₃PO₄ gives 1 Ca₃(PO₄)₂, which needs 3 Ca(OH)₂."
+            }
+        ];
+
+        function createParticles(element, count = 10) {
+            const rect = element.getBoundingClientRect();
+            const container = document.body;
+            
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = (rect.left + Math.random() * rect.width) + 'px';
+                particle.style.top = (rect.top + rect.height / 2) + 'px';
+                particle.style.background = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1'][Math.floor(Math.random() * 4)];
+                
+                container.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }, 2000);
+            }
+        }
+
+        function createConfetti() {
+            const container = document.body;
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#ffd700', '#ff8a80', '#82ca9d'];
+            
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                confetti.style.height = confetti.style.width;
+                
+                container.appendChild(confetti);
+                
+                setTimeout(() => {
+                    if (confetti.parentNode) {
+                        confetti.parentNode.removeChild(confetti);
+                    }
+                }, 3000);
+            }
+        }
+
+        function createFirework(x, y) {
+            const container = document.body;
+            const colors = ['#ff0040', '#ff8c00', '#ffd700', '#00ff80', '#0080ff', '#8000ff', '#ff0080'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Create launch firework
+            const launch = document.createElement('div');
+            launch.className = 'firework';
+            launch.style.left = x + 'px';
+            launch.style.top = (window.innerHeight - 50) + 'px';
+            launch.style.background = color;
+            launch.style.animation = 'fireworkLaunch 0.8s ease-out forwards';
+            
+            container.appendChild(launch);
+            
+            // Create explosion after launch
+            setTimeout(() => {
+                // Remove launch firework
+                if (launch.parentNode) {
+                    launch.parentNode.removeChild(launch);
+                }
+                
+                // Create explosion center
+                const explosion = document.createElement('div');
+                explosion.className = 'firework';
+                explosion.style.left = x + 'px';
+                explosion.style.top = y + 'px';
+                explosion.style.background = color;
+                explosion.style.animation = 'fireworkExplode 1s ease-out forwards';
+                explosion.style.boxShadow = `0 0 20px ${color}`;
+                
+                container.appendChild(explosion);
+                
+                // Create sparks
+                const sparkCount = 12;
+                for (let i = 0; i < sparkCount; i++) {
+                    const angle = (i / sparkCount) * Math.PI * 2;
+                    const distance = 80 + Math.random() * 40;
+                    const spark = document.createElement('div');
+                    
+                    spark.className = 'firework-spark';
+                    spark.style.left = x + 'px';
+                    spark.style.top = y + 'px';
+                    spark.style.background = color;
+                    
+                    const endX = Math.cos(angle) * distance;
+                    const endY = Math.sin(angle) * distance;
+                    
+                    spark.style.animation = 'sparkFly 1.2s ease-out forwards';
+                    spark.style.transform = `translate(${endX}px, ${endY}px)`;
+                    
+                    container.appendChild(spark);
+                    
+                    // Clean up spark
+                    setTimeout(() => {
+                        if (spark.parentNode) {
+                            spark.parentNode.removeChild(spark);
+                        }
+                    }, 1200);
+                }
+                
+                // Clean up explosion
+                setTimeout(() => {
+                    if (explosion.parentNode) {
+                        explosion.parentNode.removeChild(explosion);
+                    }
+                }, 1000);
+                
+            }, 800);
+        }
+
+        function createFireworks() {
+            playFireworkSound();
+            
+            // Create multiple fireworks at different positions and times
+            const fireworkCount = 3;
+            for (let i = 0; i < fireworkCount; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * (window.innerWidth - 200) + 100;
+                    const y = Math.random() * 200 + 100;
+                    createFirework(x, y);
+                    
+                    // Play additional sound for each firework
+                    if (i > 0) {
+                        playFireworkSound();
+                    }
+                }, i * 400);
+            }
+        }
+
+        function displayEquation() {
+            const eq = equations[currentEquation];
+            let html = '';
+            
+            // Add reactants with input fields
+            for (let i = 0; i < eq.reactants.length; i++) {
+                html += `<input type="number" class="coefficient-input" id="coeff${i}" min="1" max="20" placeholder="?">`;
+                html += `<span class="molecule">${eq.reactants[i]}</span>`;
+                if (i < eq.reactants.length - 1) html += ' + ';
+            }
+            
+            html += '<span class="arrow">→</span>';
+            
+            // Add products with input fields
+            for (let i = 0; i < eq.products.length; i++) {
+                const coeffIndex = eq.reactants.length + i;
+                html += `<input type="number" class="coefficient-input" id="coeff${coeffIndex}" min="1" max="20" placeholder="?">`;
+                html += `<span class="molecule">${eq.products[i]}</span>`;
+                if (i < eq.products.length - 1) html += ' + ';
+            }
+            
+            const equationElement = document.getElementById('equation');
+            equationElement.innerHTML = html;
+            equationElement.classList.add('animate-fadeIn');
+            
+            // Update level based on current equation
+            level = Math.floor(currentEquation / 2) + 1;
+            document.getElementById('level').textContent = level;
+            
+            // Update progress bar with animation
+            const progress = ((currentEquation + 1) / equations.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                equationElement.classList.remove('animate-fadeIn');
+            }, 500);
+        }
+
+        function checkAnswer() {
+            playClickSound();
+            
+            const eq = equations[currentEquation];
+            const userCoeffs = [];
+            let allFilled = true;
+            
+            // Get user input
+            for (let i = 0; i < eq.coefficients.length; i++) {
+                const input = document.getElementById(`coeff${i}`);
+                const value = parseInt(input.value);
+                if (!value || value < 1) {
+                    allFilled = false;
+                    break;
+                }
+                userCoeffs.push(value);
+            }
+            
+            if (!allFilled) {
+                playErrorSound();
+                showFeedback('Please fill in all coefficients with positive numbers!', 'error');
+                document.getElementById('equation').classList.add('animate-shake');
+                setTimeout(() => {
+                    document.getElementById('equation').classList.remove('animate-shake');
+                }, 500);
+                return;
+            }
+            
+            // Check if answer is correct
+            const isCorrect = arraysEqual(userCoeffs, eq.coefficients);
+            
+            if (isCorrect) {
+                playSuccessSound();
+                const points = Math.max(100 - (hintsUsed * 25), 25);
+                score += points;
+                streak++;
+                
+                // Animate score update
+                const scoreElement = document.getElementById('score');
+                const streakElement = document.getElementById('streak');
+                scoreElement.textContent = score;
+                streakElement.textContent = streak;
+                scoreElement.classList.add('animate-bounce');
+                streakElement.classList.add('animate-bounce');
+                
+                // Create success particles
+                createParticles(document.getElementById('equation'), 15);
+                
+                // Add glow effect to equation
+                document.getElementById('equation').classList.add('animate-correctGlow');
+                
+                // Create fireworks for correct answers!
+                createFireworks();
+                
+                showFeedback(`🎉 Correct! +${points} points! Great job balancing the equation!`, 'success');
+                
+                // Create confetti for high streaks
+                if (streak >= 3) {
+                    createConfetti();
+                }
+                
+                // Clean up animations
+                setTimeout(() => {
+                    scoreElement.classList.remove('animate-bounce');
+                    streakElement.classList.remove('animate-bounce');
+                    document.getElementById('equation').classList.remove('animate-correctGlow');
+                }, 1000);
+                
+                // Auto advance after 2 seconds
+                setTimeout(() => {
+                    nextEquation();
+                }, 2000);
+            } else {
+                playErrorSound();
+                streak = 0;
+                const streakElement = document.getElementById('streak');
+                streakElement.textContent = streak;
+                streakElement.classList.add('animate-shake');
+                
+                // Shake the equation container
+                document.getElementById('equation').classList.add('animate-shake');
+                
+                showFeedback('❌ Not quite right. Check your coefficients and try again!', 'error');
+                
+                setTimeout(() => {
+                    streakElement.classList.remove('animate-shake');
+                    document.getElementById('equation').classList.remove('animate-shake');
+                }, 500);
+            }
+        }
+
+        function nextEquation() {
+            playClickSound();
+            currentEquation++;
+            hintsUsed = 0;
+            
+            if (currentEquation >= equations.length) {
+                playSuccessSound();
+                createConfetti();
+                showFeedback(`🏆 Congratulations! You've completed all equations! Final Score: ${score}`, 'success');
+                return;
+            }
+            
+            hideFeedback();
+            hideHint();
+            displayEquation();
+        }
+
+        function showHint() {
+            playHintSound();
+            const eq = equations[currentEquation];
+            document.getElementById('hintText').textContent = eq.hint;
+            const hintBox = document.getElementById('hintBox');
+            hintBox.style.display = 'block';
+            hintBox.classList.add('animate-slideIn');
+            hintsUsed++;
+            
+            setTimeout(() => {
+                hintBox.classList.remove('animate-slideIn');
+            }, 500);
+        }
+
+        function hideHint() {
+            document.getElementById('hintBox').style.display = 'none';
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback ${type} animate-fadeIn`;
+            feedback.style.display = 'block';
+            
+            setTimeout(() => {
+                feedback.classList.remove('animate-fadeIn');
+            }, 500);
+        }
+
+        function hideFeedback() {
+            document.getElementById('feedback').style.display = 'none';
+        }
+
+        function arraysEqual(a, b) {
+            return a.length === b.length && a.every((val, i) => val === b[i]);
+        }
+
+        function startGame() {
+            const usernameInput = document.getElementById('usernameInput');
+            const username = usernameInput.value.trim();
+            
+            if (!username) {
+                playErrorSound();
+                usernameInput.style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    usernameInput.style.animation = '';
+                }, 500);
+                return;
+            }
+            
+            playClickSound();
+            
+            // Hide username section and show welcome message
+            document.getElementById('usernameSection').style.display = 'none';
+            document.getElementById('playerName').textContent = username;
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            welcomeMessage.style.display = 'block';
+            welcomeMessage.classList.add('animate-fadeIn');
+            
+            // Show game area after a brief delay
+            setTimeout(() => {
+                document.getElementById('gameArea').style.display = 'block';
+                document.getElementById('gameArea').classList.add('animate-fadeIn');
+                displayEquation();
+            }, 1000);
+        }
+
+        // Initialize game - don't display equation until name is entered
+
+        // Add enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const gameArea = document.getElementById('gameArea');
+                if (gameArea.style.display === 'none') {
+                    // If game hasn't started, start it
+                    startGame();
+                } else {
+                    // If game is active, check answer
+                    checkAnswer();
+                }
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9799b8b1c6bb71e8',t:'MTc1Njk0OTQyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
